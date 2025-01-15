@@ -1,1 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JackSucksAtMemes Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f7f7f7;
+    }
+    .container {
+      display: flex;
+      width: 1000px;
+      height: 600px;
+    }
+    .templates {
+      width: 200px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow-y: scroll;
+      border-right: 2px solid #333;
+    }
+    .templates img {
+      width: 100%;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .meme-canvas-container {
+      flex-grow: 1;
+      position: relative;
+    }
+    canvas {
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    .controls {
+      width: 200px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    button {
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      background: #333;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    #textEffectsPopup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      border: 2px solid #333;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      z-index: 3;
+    }
+    input[type="color"], input[type="number"], input[type="checkbox"] {
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Templates on the Left -->
+    <div class="templates" id="templates">
+      <img src="https://preview.redd.it/here-are-some-meme-templates-from-the-new-video-jack-you-v0-c4k38i2s2ihd1.jpg?width=1080&crop=smart&auto=webp&s=9d703ba3c7e0db911f747eda18abc37ac5ac5635" alt="Template 1" onclick="selectTemplate('https://preview.redd.it/here-are-some-meme-templates-from-the-new-video-jack-you-v0-c4k38i2s2ihd1.jpg?width=1080&crop=smart&auto=webp&s=9d703ba3c7e0db911f747eda18abc37ac5ac5635')">
+      <img src="https://i.redd.it/e8eazls8qc6d1.jpeg" alt="Template 2" onclick="selectTemplate('https://i.redd.it/e8eazls8qc6d1.jpeg')">
+      <img src="https://preview.redd.it/new-meme-template-potentially-v0-aon9c9xsz9ld1.jpg?width=1080&crop=smart&auto=webp&s=9da4c7d3952d2bd64e34ff6de85cbc298b9140b1" alt="Template 3" onclick="selectTemplate('https://preview.redd.it/new-meme-template-potentially-v0-aon9c9xsz9ld1.jpg?width=1080&crop=smart&auto=webp&s=9da4c7d3952d2bd64e34ff6de85cbc298b9140b1')">
+      <img src="https://preview.redd.it/uno-meme-template-for-you-guys-have-fun-v0-oe7flg8zij0e1.jpeg?width=1080&crop=smart&auto=webp&s=88d8344317e6d9c657d054c2ab309fe032b08a63" alt="Template 4" onclick="selectTemplate('https://preview.redd.it/uno-meme-template-for-you-guys-have-fun-v0-oe7flg8zij0e1.jpeg?width=1080&crop=smart&auto=webp&s=88d8344317e6d9c657d054c2ab309fe032b08a63')">
+    </div>
+
+    <!-- Meme Canvas in the Center -->
+    <div class="meme-canvas-container">
+      <canvas id="memeCanvas" width="800" height="600"></canvas>
+    </div>
+
+    <!-- Controls on the Right -->
+    <div class="controls">
+      <button id="addTextBtn">Add Text Layer</button>
+      <button id="downloadBtn">Download Meme</button>
+    </div>
+  </div>
+
+  <!-- Text Effects Popup -->
+  <div class="popup" id="textEffectsPopup">
+    <h3>Edit Text Effects</h3>
+    <label for="textColor">Text Color:</label>
+    <input type="color" id="textColor">
+    <label for="textSize">Font Size:</label>
+    <input type="number" id="textSize" min="10" max="100" value="30">
+    <label for="boldText">Bold:</label>
+    <input type="checkbox" id="boldText">
+    <label for="italicText">Italic:</label>
+    <input type="checkbox" id="italicText">
+    <button id="saveTextEffects">Save Changes</button>
+  </div>
+
+  <script>
+    const canvas = document.getElementById("memeCanvas");
+    const ctx = canvas.getContext("2d");
+    const addTextBtn = document.getElementById("addTextBtn");
+    const downloadBtn = document.getElementById("downloadBtn");
+    const textEffectsPopup = document.getElementById("textEffectsPopup");
+    const saveTextEffects = document.getElementById("saveTextEffects");
+    const textColorInput = document.getElementById("textColor");
+    const textSizeInput = document.getElementById("textSize");
+    const boldTextInput = document.getElementById("boldText");
+    const italicTextInput = document.getElementById("italicText");
+
+    let textElements = [];
+    let selectedTextElement = null;
+    let currentTemplate = null;
+    let isDragging = false;
+    let dragOffsetX = 0;
+    let dragOffsetY = 0;
+
+    function drawMeme() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
+      if (currentTemplate) {
+        const img = new Image();
+        img.onload = function() {
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height); // Draw selected template
+          textElements.forEach(textElement => {
+            ctx.font = `${textElement.isBold ? 'bold' : ''} ${textElement.isItalic ? 'italic' : ''} ${textElement.fontSize}px Impact`;
+            ctx.fillStyle = textElement.color;
+            ctx.fillText(textElement.text, textElement.x, textElement.y);
+          });
+        };
+        img.src = currentTemplate;
+      }
+    }
+
+    function selectTemplate(templateUrl) {
+      currentTemplate = templateUrl;
+      drawMeme();
+    }
+
+    addTextBtn.addEventListener("click", function() {
+      const newText = { text: "Text", x: canvas.width / 2, y: canvas.height / 2, fontSize: 30, color: "white", isBold: false, isItalic: false };
+      textElements.push(newText);
+      drawMeme();
+    });
+
+    canvas.addEventListener("mousedown", function(e) {
+      const x = e.offsetX;
+      const y = e.offsetY;
+      selectedTextElement = textElements.find(textElement => {
+        const textWidth = ctx.measureText(textElement.text).width;
+        const textHeight = textElement.fontSize;
+        return x >= textElement.x - textWidth / 2 && x <= textElement.x + textWidth / 2 && y >= textElement.y - textHeight / 2 && y <= textElement.y + textHeight / 2;
+      });
+
+      if (selectedTextElement) {
+        isDragging = true;
+        dragOffsetX = x - selectedTextElement.x;
+        dragOffsetY = y - selectedTextElement.y;
+      }
+    });
+
+    canvas.addEventListener("mousemove", function(e) {
+      if (isDragging && selectedTextElement) {
+        const x = e.offsetX;
+        const y = e.offsetY;
+        selectedTextElement.x = x - dragOffsetX;
+        selectedTextElement.y = y - dragOffsetY;
+        drawMeme();
+      }
+    });
+
+    canvas.addEventListener("mouseup", function() {
+      isDragging = false;
+    });
+
+    canvas.addEventListener("dblclick", function(e) {
+      const x = e.offsetX;
+      const y = e.offsetY;
+      selectedTextElement = textElements.find(textElement => {
+        const textWidth = ctx.measureText(textElement.text).width;
+        const textHeight = textElement.fontSize;
+        return x >= textElement.x - textWidth / 2 && x <= textElement.x + textWidth / 2 && y >= textElement.y - textHeight / 2 && y <= textElement.y + textHeight / 2;
+      });
+
+      if (selectedTextElement) {
+        textColorInput.value = selectedTextElement.color;
+        textSizeInput.value = selectedTextElement.fontSize;
+        boldTextInput.checked = selectedTextElement.isBold;
+        italicTextInput.checked = selectedTextElement.isItalic;
+        textEffectsPopup.style.display = "block";
+      }
+    });
+
+    saveTextEffects.addEventListener("click", function() {
+      if (selectedTextElement) {
+        selectedTextElement.color = textColorInput.value;
+        selectedTextElement.fontSize = textSizeInput.value;
+        selectedTextElement.isBold = boldTextInput.checked;
+        selectedTextElement.isItalic = italicTextInput.checked;
+        textEffectsPopup.style.display = "none";
+        drawMeme();
+      }
+    });
+
+    downloadBtn.addEventListener("click", function() {
+      const dataUrl = canvas.toDataURL("image/png");
+      const link = document.createElement("a");
+      link.href = dataUrl;
+      link.download = "jack_sucks_at_meme.png";
+      link.click();
+    });
+  </script>
+</body>
+</html>
 
