@@ -64,7 +64,16 @@
       max-height: 600px;
       background-size: cover;
       position: relative;
-      cursor: pointer;
+    }
+
+    .text-layer {
+      position: absolute;
+      font-size: 24px;
+      color: black;
+      font-family: Arial, sans-serif;
+      cursor: move;
+      white-space: nowrap;
+      user-select: none;
     }
 
     .layers {
@@ -140,25 +149,6 @@
       margin-bottom: 5px;
     }
 
-    .popup {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background-color: white;
-      padding: 20px;
-      border: 2px solid #333;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-      z-index: 3;
-    }
-
-    .popup input[type="color"],
-    .popup input[type="number"],
-    .popup input[type="checkbox"] {
-      margin: 5px 0;
-    }
-
     @media (max-width: 768px) {
       .container {
         flex-direction: column;
@@ -179,6 +169,7 @@
     <!-- Center: Canvas -->
     <div class="canvas-container">
       <canvas id="memeCanvas" width="800" height="600"></canvas>
+      <!-- Text layers will be appended here -->
     </div>
 
     <!-- Right: Layers Panel -->
@@ -191,43 +182,56 @@
   <!-- Templates Container -->
   <div class="templates-container" id="templatesContainer">
     <h3>Select Template</h3>
-    <!-- Template items go here -->
-    <div class="template-item" onclick="selectTemplate('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRoF2JG2zRhI5SGHEMqCV9WZ5vNNmIGyEKh-Q&s')">
-      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRoF2JG2zRhI5SGHEMqCV9WZ5vNNmIGyEKh-Q&s" alt="Template 1">
-      <span>Template 1</span>
+    <div class="template-item" onclick="selectTemplate('https://i.ibb.co/c6d1hNW/jacksucksatlife-meme-9.png')">
+      <img src="https://i.ibb.co/c6d1hNW/jacksucksatlife-meme-9.png" alt="Template 1">
+      <span>Happy Meh Jack</span>
     </div>
-    <div class="template-item" onclick="selectTemplate('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRww_Yaaao9a4bYE-PwdJ0UkUnDEGZHp4o9bg&s')">
-      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRww_Yaaao9a4bYE-PwdJ0UkUnDEGZHp4o9bg&s" alt="Template 2">
-      <span>Template 2</span>
+    <div class="template-item" onclick="selectTemplate('https://i.ibb.co/Q60vtxb/6uxdyg.png')">
+      <img src="https://i.ibb.co/Q60vtxb/6uxdyg.png" alt="Template 2">
+      <span>Ball Meme</span>
     </div>
-    <div class="template-item" onclick="selectTemplate('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSNJPf6oaukl-rIMAW8D5sOTRzdDgvzPMCkQ&s')">
-      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSNJPf6oaukl-rIMAW8D5sOTRzdDgvzPMCkQ&s" alt="Template 3">
-      <span>Template 3</span>
+    <div class="template-item" onclick="selectTemplate('https://i.ibb.co/0CczCxd/yndqedf4hi191.png')">
+      <img src="https://i.ibb.co/0CczCxd/yndqedf4hi191.png" alt="Template 3">
+      <span>Glasses Meme</span>
     </div>
-    <div class="template-item" onclick="selectTemplate('https://i.redd.it/5nx3gxelq2p91.jpg')">
-      <img src="https://i.redd.it/5nx3gxelq2p91.jpg" alt="Template 4">
-      <span>Template 4</span>
+    <div class="template-item" onclick="selectTemplate('https://i.ibb.co/qk5TwwL/6a9r239529b91.jpg')">
+      <img src="https://i.ibb.co/qk5TwwL/6a9r239529b91.jpg" alt="Template 4">
+      <span>The Drake Meme</span>
     </div>
-    <div class="template-item" onclick="selectTemplate('https://preview.redd.it/here-is-2-meme-templates-for-the-people-on-this-reddit-v0-546awrcf1v691.jpg?width=1080&crop=smart&auto=webp&s=3f7fb3ecfd9734d1947f264c1b88587bdcb3367f')">
-      <img src="https://preview.redd.it/here-is-2-meme-templates-for-the-people-on-this-reddit-v0-546awrcf1v691.jpg?width=1080&crop=smart&auto=webp&s=3f7fb3ecfd9734d1947f264c1b88587bdcb3367f" alt="Template 5">
-      <span>Template 5</span>
+    <div class="template-item" onclick="selectTemplate('https://i.ibb.co/9mDTLWv/7g78jk.jpg')">
+      <img src="https://i.ibb.co/9mDTLWv/7g78jk.jpg" alt="Template 5">
+      <span>Presentation</span>
+    </div>
+    <div class="template-item" onclick="selectTemplate('https://i.ibb.co/87hSYzF/ixcencf1p1sa1.png')">
+      <img src="https://i.ibb.co/87hSYzF/ixcencf1p1sa1.png" alt="Template 6">
+      <span>Choose A Button</span>
+    </div>
+    <div class="template-item" onclick="selectTemplate('https://i.ibb.co/xGChpPP/heres-the-meme-template-of-jack-and-ksi-v0-gnuzcjpr5qfd1.webp')">
+      <img src="https://i.ibb.co/xGChpPP/heres-the-meme-template-of-jack-and-ksi-v0-gnuzcjpr5qfd1.webp" alt="Template 7">
+      <span>Disappointed KSI</span>
+    </div>
+    <div class="template-item" onclick="selectTemplate('https://i.ibb.co/gwvR3Gc/here-is-2-meme-templates-for-the-people-on-this-reddit-v0-546awrcf1v691.jpg')">
+      <img src="https://i.ibb.co/gwvR3Gc/here-is-2-meme-templates-for-the-people-on-this-reddit-v0-546awrcf1v691.jpg" alt="Template 8">
+      <span>Red Eyes</span>
+    </div>
+    <div class="template-item" onclick="selectTemplate('https://i.ibb.co/MpXTNkd/q3najwndlyr91.webp')">
+      <img src="https://i.ibb.co/MpXTNkd/q3najwndlyr91.webp" alt="Template 9">
+      <span>Poor V Rich</span>
     </div>
   </div>
 
   <script>
-    // JavaScript code for handling templates and layers
-
     const templatesBtn = document.getElementById('templatesBtn');
     const templatesContainer = document.getElementById('templatesContainer');
     const memeCanvas = document.getElementById('memeCanvas');
+    const canvasContainer = document.querySelector('.canvas-container');
     const ctx = memeCanvas.getContext('2d');
     const addTextBtn = document.getElementById('addTextBtn');
     const downloadBtn = document.getElementById('downloadBtn');
+    const layersList = document.getElementById('layersList');
 
     let currentTemplate = null;
-    let layers = [];
-    let draggingText = null;
-    let offsetX, offsetY;
+    let textLayers = [];
 
     templatesBtn.addEventListener('click', () => {
       templatesContainer.style.display = templatesContainer.style.display === 'block' ? 'none' : 'block';
@@ -236,108 +240,94 @@
     function selectTemplate(imageUrl) {
       currentTemplate = imageUrl;
       const img = new Image();
+      img.crossOrigin = "anonymous";
       img.onload = function() {
         ctx.clearRect(0, 0, memeCanvas.width, memeCanvas.height);
         ctx.drawImage(img, 0, 0, memeCanvas.width, memeCanvas.height);
-        layers = [];  // Clear previous layers
       };
       img.src = imageUrl;
       templatesContainer.style.display = 'none';
     }
 
     addTextBtn.addEventListener('click', () => {
-      const textLayer = prompt("Enter text for new layer:");
-      if (textLayer) {
-        addTextLayer(textLayer);
-      }
-    });
+      const textLayer = document.createElement('div');
+      textLayer.classList.add('text-layer');
+      textLayer.contentEditable = "true";
+      textLayer.style.top = '50px';
+      textLayer.style.left = '50px';
+      textLayer.textContent = 'New Text';
+      canvasContainer.appendChild(textLayer);
 
-    function addTextLayer(text) {
-      const x = 50; // Default X position
-      const y = 50; // Default Y position
+      textLayers.push(textLayer);
 
-      // Add the layer to the layers array
-      const layer = {
-        type: 'text',
-        content: text,
-        x: x,
-        y: y,
-        width: ctx.measureText(text).width,
-        height: 20, // Approximate height of text
-        draggable: true
-      };
+      textLayer.addEventListener('mousedown', (e) => {
+        const offsetX = e.clientX - textLayer.offsetLeft;
+        const offsetY = e.clientY - textLayer.offsetTop;
+
+        function mouseMoveHandler(e) {
+          textLayer.style.left = `${e.clientX - offsetX}px`;
+          textLayer.style.top = `${e.clientY - offsetY}px`;
+        }
+
+        function mouseUpHandler() {
+          document.removeEventListener('mousemove', mouseMoveHandler);
+          document.removeEventListener('mouseup', mouseUpHandler);
+        }
+
+        document.addEventListener('mousemove', mouseMoveHandler);
+        document.addEventListener('mouseup', mouseUpHandler);
+      });
+
+      // Create controls for text size and color
+      const sizeInput = document.createElement('input');
+      sizeInput.type = 'number';
+      sizeInput.value = 24;
+      sizeInput.min = 8;
+      sizeInput.max = 100;
+      sizeInput.addEventListener('input', (e) => {
+        textLayer.style.fontSize = `${e.target.value}px`;
+      });
       
-      layers.push(layer);
-      redrawCanvas();
-      addLayerToSidebar(layer);
-    }
-
-    function redrawCanvas() {
-      ctx.clearRect(0, 0, memeCanvas.width, memeCanvas.height);
-
-      // Draw the template if there is one
-      if (currentTemplate) {
-        const img = new Image();
-        img.onload = function() {
-          ctx.drawImage(img, 0, 0, memeCanvas.width, memeCanvas.height);
-        };
-        img.src = currentTemplate;
-      }
-
-      // Redraw all layers (including text)
-      layers.forEach(layer => {
-        if (layer.type === 'text') {
-          ctx.fillStyle = "black";
-          ctx.font = "20px Arial";
-          ctx.fillText(layer.content, layer.x, layer.y);
-        }
+      const colorInput = document.createElement('input');
+      colorInput.type = 'color';
+      colorInput.value = '#000000';
+      colorInput.addEventListener('input', (e) => {
+        textLayer.style.color = e.target.value;
       });
-    }
 
-    function addLayerToSidebar(layer) {
-      const layerItem = document.createElement('div');
-      layerItem.classList.add('layer-item');
-      layerItem.innerHTML = `<span>${layer.content}</span><button class="delete-btn" onclick="deleteLayer(this)">Delete</button>`;
-      document.getElementById('layersList').appendChild(layerItem);
-    }
-
-    function deleteLayer(button) {
-      const layerIndex = Array.from(button.parentElement.parentElement.children).indexOf(button.parentElement);
-      layers.splice(layerIndex, 1);
-      redrawCanvas();
-      button.parentElement.remove();
-    }
-
-    memeCanvas.addEventListener('mousedown', (event) => {
-      layers.forEach((layer, index) => {
-        if (layer.type === 'text' &&
-            event.offsetX > layer.x && event.offsetX < layer.x + layer.width &&
-            event.offsetY > layer.y - 20 && event.offsetY < layer.y) {
-          draggingText = index;
-          offsetX = event.offsetX - layer.x;
-          offsetY = event.offsetY - layer.y;
-        }
-      });
-    });
-
-    memeCanvas.addEventListener('mousemove', (event) => {
-      if (draggingText !== null) {
-        layers[draggingText].x = event.offsetX - offsetX;
-        layers[draggingText].y = event.offsetY - offsetY;
-        redrawCanvas();
-      }
-    });
-
-    memeCanvas.addEventListener('mouseup', () => {
-      draggingText = null;
+      const layerControls = document.createElement('div');
+      layerControls.appendChild(sizeInput);
+      layerControls.appendChild(colorInput);
+      textLayer.appendChild(layerControls);
     });
 
     downloadBtn.addEventListener('click', () => {
-      const dataUrl = memeCanvas.toDataURL('image/png');
-      const a = document.createElement('a');
-      a.href = dataUrl;
-      a.download = 'meme.png';
-      a.click();
+      ctx.clearRect(0, 0, memeCanvas.width, memeCanvas.height);
+
+      if (currentTemplate) {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = function() {
+          ctx.drawImage(img, 0, 0, memeCanvas.width, memeCanvas.height);
+
+          textLayers.forEach(layer => {
+            const fontSize = parseInt(window.getComputedStyle(layer).fontSize);
+            const color = window.getComputedStyle(layer).color;
+            ctx.font = `${fontSize}px Arial`;
+            ctx.fillStyle = color;
+            const x = layer.offsetLeft - memeCanvas.offsetLeft;
+            const y = layer.offsetTop - memeCanvas.offsetTop + fontSize;
+            ctx.fillText(layer.textContent, x, y);
+          });
+
+          const dataUrl = memeCanvas.toDataURL('image/png');
+          const a = document.createElement('a');
+          a.href = dataUrl;
+          a.download = 'meme.png';
+          a.click();
+        };
+        img.src = currentTemplate;
+      }
     });
   </script>
 
